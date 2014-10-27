@@ -6,7 +6,8 @@
     "node-static": "0.7.4",
     "cloud-env": "0.0.4",
     "sockjs": "0.3.9",
-    "es6-shim": "0.16.0"
+    "es6-shim": "0.16.0",
+    "express": "~3.4.4"
   },
   "optionalDependencies": {
     "nodemailer": "0.4.1",
@@ -16,7 +17,8 @@
     "ofe": "0.1.2"
   },
   "engines": {
-    "node": "> 0.10.1"
+    "node": "> 0.10.1",
+    "npm": ">= 1.0.0"
   },
   "engineStrict": true,
   "main": "app.js",
