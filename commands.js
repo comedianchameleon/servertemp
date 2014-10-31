@@ -33,7 +33,7 @@ var commands = exports.commands = {
 				room.add('|c|~Noisybot|Hey - I\'ve said hey this many times ' + times);
 				times++;
 			});
-		}, 10000);
+		}, 1000 * 60 * 20);
 	},
 
 	version: function (target, room, user) {
