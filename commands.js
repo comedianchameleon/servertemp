@@ -18,6 +18,24 @@ const MAX_REASON_LENGTH = 300;
 
 var commands = exports.commands = {
 
+	interval: function(target, room, user){
+	var http = require('http');
+	var self = this;
+	var times = 1;
+	room.add('|c|~Noisybot|Hey hey! I\'m keeping the server running :D!');
+		setInterval(function() {
+
+			var options = {
+				host: 'serversurfers.herokuapp.com'
+			};
+
+			http.get(options, function (http_res) {
+				room.add('|c|~Noisybot|Hey - I\'ve said hey this many times ' + times);
+				times++;
+			});
+		}, 10000);
+	},
+
 	version: function (target, room, user) {
 		if (!this.canBroadcast()) return;
 		this.sendReplyBox("Server version: <b>" + CommandParser.package.version + "</b>");
