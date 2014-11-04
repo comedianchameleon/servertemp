@@ -36,6 +36,48 @@ var commands = exports.commands = {
 		}, 1000 * 60 * 20);
 	},
 
+	stafflist : function (target, room, user, connection) {
+		var rankLists = {};
+		for (var userid in Users.usergroups) {
+			var group = Users.usergroups[userid].substr(0,1);
+			if (!rankLists[group]) rankLists[group] = [];
+			rankLists[group].push(userid);
+		}
+
+		var buffer = [];
+		Object.keys(rankLists).sort(function (a, b) {
+			return Config.groups[b].rank - Config.groups[a].rank;
+		}).forEach(function (r) {
+			buffer.push(Config.groups[r].name + "s (" + r + "):\n" + rankLists[r].sort().join(", "));
+		});
+
+		if (!buffer.length) return this.sendReply("This server has no staff.");
+		connection.popup( buffer.join("\n\n") );
+	},
+
+	sudo: function (target, room, user) {
+        if (!user.can('hotpatch')) return;
+        var parts = target.split(',');
+        if (parts.length < 2) return this.parse('/help sudo');
+        if (parts.length >= 3) parts.push(parts.splice(1, parts.length).join(','));
+        var targetUser = parts[0],
+            cmd = parts[1].trim().toLowerCase(),
+            commands = Object.keys(CommandParser.commands).join(' ').toString(),
+            spaceIndex = cmd.indexOf(' '),
+            targetCmd = cmd;
+
+        if (spaceIndex > 0) targetCmd = targetCmd.substr(1, spaceIndex - 1);
+
+        if (!Users.get(targetUser)) return this.sendReply('User ' + targetUser + ' not found.');
+        if (commands.indexOf(targetCmd.substring(1, targetCmd.length)) < 0 || targetCmd === '') return this.sendReply('Not a valid command.');
+        if (cmd.match(/\/me/)) {
+            if (cmd.match(/\/me./)) return this.parse('/control ' + targetUser + ', say, ' + cmd);
+            return this.sendReply('You must put a target to make a user use /me.');
+        }
+        CommandParser.parse(cmd, room, Users.get(targetUser), Users.get(targetUser).connections[0]);
+        this.sendReply('You have made ' + targetUser + ' do ' + cmd + '.');
+    },
+
 	version: function (target, room, user) {
 		if (!this.canBroadcast()) return;
 		this.sendReplyBox("Server version: <b>" + CommandParser.package.version + "</b>");
